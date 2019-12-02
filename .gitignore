@@ -5,3 +5,6 @@
 MYMETA.*
 !META.json
 /.prove
+.vstags
+.vscode/
+.DS_Store
