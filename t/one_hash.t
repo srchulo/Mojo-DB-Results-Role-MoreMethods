@@ -87,7 +87,7 @@ for my $mojo_db_config (@mojo_dbs_config) {
         my $hash;
         lives_ok
             { $hash = $results->one_hash }
-            '1 rows returned lives';
+            '1 row returned lives';
         is_deeply $hash, {id => 1, name => 'Bob', age => 23, favorite_food => 'Pizza'};
     }
 }
