@@ -57,31 +57,31 @@ for my $mojo_db_config (@mojo_dbs_config) {
         is $collections->size, 0, 'collections is empty';
 
         note 'Test one row in table';
-        $db->insert(people => {name => 'Bob', age => 23, favorite_food => 'Pizza'}, undef, {-asc => 'id'});
-        $collections = $db->select(people => ['name'])->with_roles($role)->collections;
+        $db->insert(people => {name => 'Bob', age => 23, favorite_food => 'Pizza'});
+        $collections = $db->select(people => ['name'], undef, {-asc => 'id'})->with_roles($role)->collections;
         isa_ok $collections, 'Mojo::Collection';
         is $collections->size, 1, 'collections has size 1';
         isa_ok $collections->[0], 'Mojo::Collection';
         is_deeply $collections, [['Bob']];
 
         note 'Test two rows in table';
-        $db->insert(people => {name => 'Alice', age => 27, favorite_food => 'Hamburgers'}, undef, {-asc => 'id'});
-        $collections = $db->select(people => ['name'])->with_roles($role)->collections;
+        $db->insert(people => {name => 'Alice', age => 27, favorite_food => 'Hamburgers'});
+        $collections = $db->select(people => ['name'], undef, {-asc => 'id'})->with_roles($role)->collections;
         isa_ok $collections, 'Mojo::Collection';
         is $collections->size, 2, 'collections has size 2';
         isa_ok $_, 'Mojo::Collection' for $collections->each;
         is_deeply $collections, [['Bob'], ['Alice']];
 
         note 'Test three rows in table';
-        $db->insert(people => {name => 'Eve', age => 33, favorite_food => 'Sushi'}, undef, {-asc => 'id'});
-        $collections = $db->select(people => ['name'])->with_roles($role)->collections;
+        $db->insert(people => {name => 'Eve', age => 33, favorite_food => 'Sushi'});
+        $collections = $db->select(people => ['name'], undef, {-asc => 'id'})->with_roles($role)->collections;
         isa_ok $collections, 'Mojo::Collection';
         is $collections->size, 3, 'collections has size 3';
         isa_ok $_, 'Mojo::Collection' for $collections->each;
         is_deeply $collections, [['Bob'], ['Alice'], ['Eve']];
 
         note 'Test selecting multiple columns';
-        $collections = $db->select(people => ['name', 'favorite_food'])->with_roles($role)->collections;
+        $collections = $db->select(people => ['name', 'favorite_food'], undef, {-asc => 'id'})->with_roles($role)->collections;
         isa_ok $collections, 'Mojo::Collection';
         is $collections->size, 3, 'collections has size 3';
         isa_ok $_, 'Mojo::Collection' for $collections->each;

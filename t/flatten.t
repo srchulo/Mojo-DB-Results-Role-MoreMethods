@@ -57,28 +57,28 @@ for my $mojo_db_config (@mojo_dbs_config) {
         is $c->size, 0, 'collection is empty';
 
         note 'Test one row in table';
-        $db->insert(people => {name => 'Bob', age => 23, favorite_food => 'Pizza'}, undef, {-asc => 'id'});
+        $db->insert(people => {name => 'Bob', age => 23, favorite_food => 'Pizza'});
         $c = $db->select(people => ['name'])->with_roles($role)->flatten;
         isa_ok $c, 'Mojo::Collection';
         is $c->size, 1, 'collection has size 1';
         is_deeply $c, ['Bob'];
 
         note 'Test two rows in table';
-        $db->insert(people => {name => 'Alice', age => 27, favorite_food => 'Hamburgers'}, undef, {-asc => 'id'});
-        $c = $db->select(people => ['name'])->with_roles($role)->flatten;
+        $db->insert(people => {name => 'Alice', age => 27, favorite_food => 'Hamburgers'});
+        $c = $db->select(people => ['name'], undef, {-asc => 'id'})->with_roles($role)->flatten;
         isa_ok $c, 'Mojo::Collection';
         is $c->size, 2, 'collection has size 2';
         is_deeply $c, ['Bob', 'Alice'];
 
         note 'Test three rows in table';
-        $db->insert(people => {name => 'Eve', age => 33, favorite_food => 'Sushi'}, undef, {-asc => 'id'});
-        $c = $db->select(people => ['name'])->with_roles($role)->flatten;
+        $db->insert(people => {name => 'Eve', age => 33, favorite_food => 'Sushi'});
+        $c = $db->select(people => ['name'], undef, {-asc => 'id'})->with_roles($role)->flatten;
         isa_ok $c, 'Mojo::Collection';
         is $c->size, 3, 'collection has size 3';
         is_deeply $c, ['Bob', 'Alice', 'Eve'];
 
         note 'Test selecting multiple columns';
-        $c = $db->select(people => ['name', 'favorite_food'])->with_roles($role)->flatten;
+        $c = $db->select(people => ['name', 'favorite_food'], undef, {-asc => 'id'})->with_roles($role)->flatten;
         isa_ok $c, 'Mojo::Collection';
         is $c->size, 6, 'collection has size 6';
         is_deeply $c, [Bob => 'Pizza', Alice => 'Hamburgers', Eve => 'Sushi'];
