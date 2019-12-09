@@ -71,8 +71,8 @@ sub test_list_context {
 
     note "Test calling $method in void context warns";
     my $results = $db->select(people => ['name', 'age', 'favorite_food'] => {id => 1})
-                    ->with_roles($role)
-                    ;
+                     ->with_roles($role)
+                     ;
 
     warning_like
         { $results->$method }
