@@ -44,7 +44,7 @@ my @mojo_dbs_config = (
 for my $mojo_db_config (@mojo_dbs_config) {
     for my $role (qw(Mojo::DB::Results::Role::MoreMethods +MoreMethods)) {
         my $mojo_db = $mojo_db_config->{creator}->();
-        note "Testing @{[ ref $mojo_db ]}";
+        note "Testing @{[ ref $mojo_db ]} with role $role";
 
         my $db = $mojo_db->db;
         ok $db->ping, 'connected';

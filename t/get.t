@@ -46,7 +46,7 @@ my @mojo_dbs_config = (
 for my $mojo_db_config (@mojo_dbs_config) {
     for my $role (qw(Mojo::DB::Results::Role::MoreMethods +MoreMethods)) {
         my $mojo_db = $mojo_db_config->{creator}->();
-        note "Testing @{[ ref $mojo_db ]}";
+        note "Testing @{[ ref $mojo_db ]} with role $role";
 
         my $db = $mojo_db->db;
         test_list_context($db, $mojo_db_config->{drop_table_sql}, $mojo_db_config->{create_table_sql}, $role, 'get');
