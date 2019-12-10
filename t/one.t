@@ -69,7 +69,7 @@ sub test_list_context {
                      ->with_roles($role)
                      ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     warning_like
         { $results->one }
         qr/get or get variant called without using return value/,
@@ -81,7 +81,7 @@ sub test_list_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     warning_like
         { $results->one(0, 1, 2) }
         qr/get or get variant called without using return value/,
@@ -94,7 +94,7 @@ sub test_list_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     my ($name, $age, $favorite_food) = $results->one;
     is $name, 'Bob', 'expected name returned in list context';
     is $age, 23, 'expected age returned in list context';
@@ -107,7 +107,7 @@ sub test_list_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     my @values = $results->one(1);
     is scalar @values, 1, 'one value should be returned';
     is $values[0], 23, 'expected age returned';
@@ -119,7 +119,7 @@ sub test_list_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     ($favorite_food, $name) = $results->one(2, 0);
     is $favorite_food, 'Pizza', 'expected favorite food returned in list context using indexes';
     is $name, 'Bob', 'expected name returned in list context using indexes';
@@ -131,7 +131,7 @@ sub test_list_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     ($favorite_food, $name) = $results->one(-1, -3);
     is $favorite_food, 'Pizza', 'expected favorite food returned in list context using negative indexes';
     is $name, 'Bob', 'expected name returned in list context using negative indexes';
@@ -144,7 +144,7 @@ sub test_list_context {
                       ->with_roles($role)
                       ;
 
-        is $results->rows, 1, '1 rows returned';
+        is $results->rows, 1, '1 row returned';
         lives_ok { @values = $results->one($index) } "valid index '$index' lives";
     }
 
@@ -154,7 +154,7 @@ sub test_list_context {
                       ->with_roles($role)
                       ;
 
-        is $results->rows, 1, '1 rows returned';
+        is $results->rows, 1, '1 row returned';
         throws_ok
             { @values = $results->one($index) }
             qr/index out of valid range -3 to 2/,
@@ -197,7 +197,7 @@ sub test_scalar_context {
                      ->with_roles($role)
                      ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     warning_like
         { $results->one }
         qr/get or get variant called without using return value/,
@@ -209,7 +209,7 @@ sub test_scalar_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     warning_like
         { $results->one(1) }
         qr/get or get variant called without using return value/,
@@ -222,7 +222,7 @@ sub test_scalar_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     my $name = $results->one;
     is $name, 'Bob', 'expected name returned in scalar context';
 
@@ -233,7 +233,7 @@ sub test_scalar_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     my $value = $results->one(1);
     is $value, 23, 'expected age returned';
 
@@ -244,7 +244,7 @@ sub test_scalar_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     throws_ok
         { $value = $results->one(2, 0) }
         qr/multiple indexes passed for single requested get value/,
@@ -255,7 +255,7 @@ sub test_scalar_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     my $favorite_food = $results->one(-1);
     is $favorite_food, 'Pizza', 'expected favorite food returned in scalar context using negative index';
 
@@ -263,7 +263,7 @@ sub test_scalar_context {
                   ->with_roles($role)
                   ;
 
-    is $results->rows, 1, '1 rows returned';
+    is $results->rows, 1, '1 row returned';
     $name = $results->one(-3);
     is $name, 'Bob', 'expected name returned in scalar context using negative index';
 
@@ -275,7 +275,7 @@ sub test_scalar_context {
                       ->with_roles($role)
                       ;
 
-        is $results->rows, 1, '1 rows returned';
+        is $results->rows, 1, '1 row returned';
         lives_ok { $value = $results->one($index) } "valid index '$index' lives";
     }
 
@@ -285,7 +285,7 @@ sub test_scalar_context {
                       ->with_roles($role)
                       ;
 
-        is $results->rows, 1, '1 rows returned';
+        is $results->rows, 1, '1 row returned';
         throws_ok
             { $value = $results->one($index) }
             qr/index out of valid range -3 to 2/,
