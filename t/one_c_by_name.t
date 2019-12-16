@@ -95,7 +95,6 @@ for my $mojo_db_config (@mojo_dbs_config) {
         $results = $db->select(people => '*' => {id => 1})->with_roles($role);
         is $results->rows, 1, '1 row returned';
 
-        my $c;
         lives_ok
             { $c = $results->one_c_by_name('name', 'favorite_food') }
             '1 row returned lives';
