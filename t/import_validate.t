@@ -38,21 +38,6 @@ lives_ok
     { Mojo::DB::Results::Role::MoreMethods->import('-Pg') }
     'one -Pg flag lives';
 
-note 'Test -struct flag';
-throws_ok
-    { Mojo::DB::Results::Role::MoreMethods->import('-struct', '-struct') }
-    qr/-struct flag provided more than once/,
-    'two -struct flags throw';
-
-throws_ok
-    { Mojo::DB::Results::Role::MoreMethods->import('-struct', '-struct', '-struct') }
-    qr/-struct flag provided more than once/,
-    'three -struct flags throw';
-
-lives_ok
-    { Mojo::DB::Results::Role::MoreMethods->import('-struct') }
-    'one -struct flag lives';
-
 note 'Test results_class';
 throws_ok
     { Mojo::DB::Results::Role::MoreMethods->import(results_class => undef) }
