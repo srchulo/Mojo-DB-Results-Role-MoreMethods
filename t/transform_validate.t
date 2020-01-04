@@ -72,7 +72,7 @@ sub test_methods {
         $db->insert(people => {name => 'Bob', age => 23, favorite_food => 'Pizza'});
 
         test_useless_options_warning($db, $role, $method);
-        test_validate_hash_options($db, $role, $method);
+        test_validate_transform_options($db, $role, $method);
 
         for my $option (@$options) {
             note "Testing method $method and option " . dumper $option;
@@ -95,16 +95,30 @@ sub test_useless_options_warning {
             my $results = get_results($db, $role);
             warning_like
                 { $results->$method({$option => 1}, $key, $value) }
-                qr/useless options provided. array will be used/,
+                qr/Useless type option provided. array will be used for performance./,
                 "$prefix with $option option warns";
+
+            if ($method ne 'hashify') {
+                my $results = get_results($db, $role);
+                warning_like
+                    { $results->$method({$option => 1, flatten => 1}, $key, $value) }
+                    qr/Useless type option provided. array will be used for performance./,
+                    "$prefix with $option option and flatten option warns";
+            }
         }
 
-        for my $option ('array', $method eq 'hashify' ? () : ('flatten')) {
+        my $results = get_results($db, $role);
+        warning_is
+            { $results->$method({array => 1}, $key, $value) }
+            undef,
+            qq{$prefix with array option doesn't warn};
+
+        if ($method ne 'hashify') {
             my $results = get_results($db, $role);
             warning_is
-                { $results->$method({$option => 1}, $key, $value) }
+                { $results->$method({array => 1, flatten => 1}, $key, $value) }
                 undef,
-                qq{$prefix with $option option doesn't warn};
+                qq{$prefix with array and flatten options doesn't warn};
         }
     }
 
@@ -123,6 +137,14 @@ sub test_useless_options_warning {
                 { $results->$method({$option => 1}, $key, $value) }
                 undef,
                 qq{$prefix with $option option doesn't warn};
+
+            if ($method ne 'hashify') {
+                my $results = get_results($db, $role);
+                warning_is
+                    { $results->$method({$option => 1, flatten => 1}, $key, $value) }
+                    undef,
+                    qq{$prefix with $option option and flatten option doesn't warn};
+            }
         }
     }
 
@@ -138,38 +160,99 @@ sub test_useless_options_warning {
             qq{$method with $option_description doesn't warn};
     }
 
-    note 'Test no warnings when value is not specified';
-    for my $option (qw(array c hash struct), $method eq 'hashify' ? () : ('flatten')) {
+    note 'Test no warnings when value is not specified and flatten is not provided';
+    for my $option (qw(array c hash struct)) {
         my $results = get_results($db, $role);
         warning_is
             { $results->$method({$option => 1}, 'name') }
             undef,
             qq{$option option with no value doesn't warn};
     }
+
+    if ($method ne 'hashify') {
+        for my $test_values (
+            ['single key', 'name'],
+            ['array key', ['name', 'age']],
+        ) {
+            my ($prefix, $key) = @$test_values;
+
+            note "Test warning occurs with $prefix when flatten option is specified with type option and no value";
+            for my $option (qw(c hash struct)) {
+                my $results = get_results($db, $role);
+                warning_like
+                    { $results->$method({$option => 1, flatten => 1}, $key) }
+                    qr/Useless type option provided. array will be used for performance./,
+                    "$prefix with flatten option with $option option warns when no value is provided";
+            }
+
+            my $results = get_results($db, $role);
+            warning_like
+                { $results->$method({array => 1, flatten => 1}, $key) }
+                undef,
+                qq{$prefix with flatten option with array option doesn't warn when no value is provided};
+        }
+    }
 }
 
-sub test_validate_hash_options {
+sub test_validate_transform_options {
     my ($db, $role, $method) = @_;
 
+    if ($method eq 'hashify') {
+        my $results = get_results($db, $role);
+        throws_ok
+            { $results->$method({flatten => 1}, 'name') }
+            qr/flatten not allowed/,
+            'flatten option throws for hashify';
+    } else {
+        my $results = get_results($db, $role);
+        lives_ok
+            { $results->$method({flatten => 1}, 'name') }
+            qq"flatten option lives for $method";
+    }
+
+    my $one_key_value_pair_error = $method eq 'hashify' ? 'one key/value pair is allowed for options'
+                                                        : 'In addition to flatten, one key/value pair is allowed for options';
     my $results = get_results($db, $role);
     throws_ok
         { $results->$method({array => 1, c => 1}, 'name') }
-        qr{exactly one key/value pair required for options},
+        qr/\Q$one_key_value_pair_error\E/,
         'two key value options throws';
+
+    if ($method ne 'hashify') {
+        $results = get_results($db, $role);
+        throws_ok
+            { $results->$method({flatten => 1, array => 1, c => 1}, 'name') }
+            qr/\Q$one_key_value_pair_error\E/,
+            'two key value options with flatten option throws';
+    }
 
     $results = get_results($db, $role);
     throws_ok
         { $results->$method({array => 1, c => 1, hash => 1}, 'name') }
-        qr{exactly one key/value pair required for options},
+        qr/\Q$one_key_value_pair_error\E/,
         'three key value options throws';
 
+    if ($method ne 'hashify') {
+        $results = get_results($db, $role);
+        throws_ok
+            { $results->$method({flatten => 1, array => 1, c => 1, hash => 1}, 'name') }
+            qr/\Q$one_key_value_pair_error\E/,
+            'three key value options with flatten option throws';
+    }
+
     my @options = qw(array c hash struct);
-    push @options, 'flatten' if $method ne 'hashify';
     for my $option (@options) {
         $results = get_results($db, $role);
         lives_ok
             { $results->$method({$option => 1}, 'name') }
             "$option option lives";
+
+        if ($method ne 'hashify') {
+            $results = get_results($db, $role);
+            lives_ok
+                { $results->$method({flatten => 1, $option => 1}, 'name') }
+                "$option option with flatten option lives";
+        }
     }
 
     my $options_sep_comma = join ', ', @options;
@@ -179,26 +262,26 @@ sub test_validate_hash_options {
             { $results->$method({$unknown_option => 1}, 'name') }
             qr/option must be one of: $options_sep_comma/,
             "unknown $unknown_option option throws";
-    }
 
-    if ($method eq 'hashify') {
-        $results = get_results($db, $role);
-        throws_ok
-            { $results->$method({flatten => 1}, 'name') }
-            qr/option must be one of: $options_sep_comma/,
-            'flatten option throws for hashify';
+        if ($method ne 'hashify') {
+            $results = get_results($db, $role);
+            throws_ok
+                { $results->$method({flatten => 1, $unknown_option => 1}, 'name') }
+                qr/option must be one of: $options_sep_comma/,
+                "unknown $unknown_option option with flatten option throws";
+        }
     }
 }
 
 sub test_method {
     my ($db, $role, $method, @options) = @_;
 
-    test_parse_key_validate($db, $role, $method, @options);
-    test_parse_hash_validate($db, $role, $method, @options);
+    test_parse_transform_key_validate($db, $role, $method, @options);
+    test_parse_transform_value_validate($db, $role, $method, @options);
     test_unknown_columns_throw($db, $role, $method, @options);
 }
 
-sub test_parse_key_validate {
+sub test_parse_transform_key_validate {
     my ($db, $role, $method, @options) = @_;
 
     my $results = get_results($db, $role);
@@ -264,7 +347,7 @@ sub test_parse_key_validate {
         'string column key lives';
 }
 
-sub test_parse_hash_validate {
+sub test_parse_transform_value_validate {
     my ($db, $role, $method, @options) = @_;
 
     my $results = get_results($db, $role);
