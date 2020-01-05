@@ -10,8 +10,6 @@ before_script:
     - psql -c 'create database test;' -U postgres
 language: perl
 perl:
-  - blead
-  - dev
   - '5.30'
   - '5.28'
   - '5.26'
@@ -24,16 +22,10 @@ perl:
 cache:
   directories:
     - $HOME/perl5
-matrix:
-  allow_failures:
-    - perl: blead
-  fast_finish: 1
-  include:
-    - env: COVERAGE=1
-      perl: '5.30'
 env:
   global:
     - AUTHOR_TESTING=1
+    - COVERAGE=1
     - RELEASE_TESTING=1
     - TEST_POSTGRESQL=postgresql://postgres@/test
 before_install:
