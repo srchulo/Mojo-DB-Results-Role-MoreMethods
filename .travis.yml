@@ -3,6 +3,7 @@ addons:
     packages:
       - aspell
       - aspell-en
+  postgresql: 9.6
   mysql: "5.7"
 services:
     - postgresql
