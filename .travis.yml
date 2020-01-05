@@ -33,6 +33,7 @@ before_install:
 install:
   - cpanm -n Mojo::Pg
   - cpanm -n Mojo::mysql
+  - cpanm -n Devel::Cover
 ### __app_cisetup__
 # ---
 # force_threaded_perls: 0
