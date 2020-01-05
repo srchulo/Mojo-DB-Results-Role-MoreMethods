@@ -1,5 +1,3 @@
 - get and get_by_name don't test one option, that's just tested via one and one_by_name. Is this okay?
 - We don't test when a role is applied to a package on import. Should we share code and run all tests
   by applying the role to the package in addition to using with_roles?
-- We don't skip struct test if optional Mojo::DB::Results::Role::Struct isn't installed. Okay for now because
-  all tests are skipped without environment variables set, which for now should be author and travis testing.
