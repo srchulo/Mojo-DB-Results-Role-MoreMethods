@@ -42,6 +42,9 @@ env:
     - TEST_POSTGRESQL=postgresql://postgres@/test
 before_install:
   - eval $(curl https://travis-perl.github.io/init) --auto --always-upgrade-modules
+install:
+  - cpanm -n Mojo::Pg
+  - cpanm -n Mojo::mysql
 ### __app_cisetup__
 # ---
 # force_threaded_perls: 0
