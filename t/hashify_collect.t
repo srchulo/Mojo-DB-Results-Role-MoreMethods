@@ -241,6 +241,53 @@ sub test_multiple_keys {
     isa_ok $hash->{Nachos}{Eve}{27}, 'Mojo::Collection';
 }
 
+sub test_sub_key_multiple_keys {
+    my ($db, $drop_table_sql, $create_table_sql, $role) = @_;
+
+    drop_and_create_db($db, $drop_table_sql, $create_table_sql);
+
+    my $bob   = {name => 'Bob', age => 23, favorite_food => 'Pizza'};
+    my $bob2  = {name => 'Bob', age => 23, favorite_food => 'Pizza Rolls'};
+    my $alice = {name => 'Alice', age => 23, favorite_food => 'Hamburger'};
+    my $eve   = {name => 'Eve', age => 27, favorite_food => 'Nachos'};
+    $db->insert(people => $bob);
+    $db->insert(people => $bob2);
+    $db->insert(people => $alice);
+    $db->insert(people => $eve);
+
+    my $hash = $db->select(people => ['name', 'age', 'favorite_food'] => undef, {order_by => {-asc => 'id'}})
+                  ->with_roles($role)
+                  ->hashify_collect(sub { @{$_}{qw(name age)} })
+                  ;
+    is_deeply
+        $hash,
+        {
+            Bob   => { 23 => [$bob, $bob2] },
+            Alice => { 23 => [$alice] },
+            Eve   => { 27 => [$eve] },
+        },
+        'two keys returns a two level hash with correct value';
+    isa_ok $_, 'Mojo::Collection' for map { values %$_ } values %$hash;
+
+    $hash = $db->select(people => ['name', 'age', 'favorite_food'] => undef, {order_by => {-asc => 'id'}})
+               ->with_roles($role)
+               ->hashify_collect(sub { @{$_}{qw(favorite_food name age)} })
+               ;
+    is_deeply
+        $hash,
+        {
+            Pizza         => { Bob   => { 23 => [$bob] } },
+            'Pizza Rolls' => { Bob   => { 23 => [$bob2] } },
+            Hamburger     => { Alice => { 23 => [$alice] } },
+            Nachos        => { Eve   => { 27 => [$eve] } },
+        },
+        'three keys returns a three level hash with correct value';
+    isa_ok $hash->{Pizza}{Bob}{23}, 'Mojo::Collection';
+    isa_ok $hash->{'Pizza Rolls'}{Bob}{23}, 'Mojo::Collection';
+    isa_ok $hash->{Hamburger}{Alice}{23}, 'Mojo::Collection';
+    isa_ok $hash->{Nachos}{Eve}{27}, 'Mojo::Collection';
+}
+
 sub test_sub_used_as_key_and_value {
     my ($db, $drop_table_sql, $create_table_sql, $role) = @_;
 
@@ -392,53 +439,6 @@ sub test_sub_used_as_key_and_value {
     }
 }
 
-sub test_sub_key_multiple_keys {
-    my ($db, $drop_table_sql, $create_table_sql, $role) = @_;
-
-    drop_and_create_db($db, $drop_table_sql, $create_table_sql);
-
-    my $bob   = {name => 'Bob', age => 23, favorite_food => 'Pizza'};
-    my $bob2  = {name => 'Bob', age => 23, favorite_food => 'Pizza Rolls'};
-    my $alice = {name => 'Alice', age => 23, favorite_food => 'Hamburger'};
-    my $eve   = {name => 'Eve', age => 27, favorite_food => 'Nachos'};
-    $db->insert(people => $bob);
-    $db->insert(people => $bob2);
-    $db->insert(people => $alice);
-    $db->insert(people => $eve);
-
-    my $hash = $db->select(people => ['name', 'age', 'favorite_food'] => undef, {order_by => {-asc => 'id'}})
-                  ->with_roles($role)
-                  ->hashify_collect(sub { @{$_}{qw(name age)} })
-                  ;
-    is_deeply
-        $hash,
-        {
-            Bob   => { 23 => [$bob, $bob2] },
-            Alice => { 23 => [$alice] },
-            Eve   => { 27 => [$eve] },
-        },
-        'two keys returns a two level hash with correct value';
-    isa_ok $_, 'Mojo::Collection' for map { values %$_ } values %$hash;
-
-    $hash = $db->select(people => ['name', 'age', 'favorite_food'] => undef, {order_by => {-asc => 'id'}})
-               ->with_roles($role)
-               ->hashify_collect(sub { @{$_}{qw(favorite_food name age)} })
-               ;
-    is_deeply
-        $hash,
-        {
-            Pizza         => { Bob   => { 23 => [$bob] } },
-            'Pizza Rolls' => { Bob   => { 23 => [$bob2] } },
-            Hamburger     => { Alice => { 23 => [$alice] } },
-            Nachos        => { Eve   => { 27 => [$eve] } },
-        },
-        'three keys returns a three level hash with correct value';
-    isa_ok $hash->{Pizza}{Bob}{23}, 'Mojo::Collection';
-    isa_ok $hash->{'Pizza Rolls'}{Bob}{23}, 'Mojo::Collection';
-    isa_ok $hash->{Hamburger}{Alice}{23}, 'Mojo::Collection';
-    isa_ok $hash->{Nachos}{Eve}{27}, 'Mojo::Collection';
-}
-
 sub test_single_value {
     my ($db, $drop_table_sql, $create_table_sql, $role) = @_;
 
@@ -493,7 +493,7 @@ sub test_get_values_single_value_returned {
             Alice => [24],
             Eve   => [25],
         },
-        'multiple returned values from get_values sub works';
+        'single returned value from get_values sub works';
     isa_ok $_, 'Mojo::Collection' for values %$hash;
 }
 
