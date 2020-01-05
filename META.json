@@ -1,5 +1,5 @@
 {
-   "abstract" : "Blah blah blah",
+   "abstract" : "More methods for DB Results, like Mojo::Pg::Results and Mojo::mysql::Results",
    "author" : [
       "Adam Hopkins <srchulo@cpan.org>"
    ],
@@ -37,17 +37,37 @@
       },
       "runtime" : {
          "requires" : {
-            "perl" : "5.008005"
+            "Mojo::Collection::Role::Transform" : "0.02",
+            "Mojo::DB::Results::Role::Struct" : "0",
+            "Mojolicious" : "7.41",
+            "Role::Tiny" : "2.000001",
+            "perl" : "5.010001"
          }
       },
       "test" : {
          "requires" : {
-            "Test::More" : "0.96"
+            "Test::Exception" : "0",
+            "Test::More" : "0.96",
+            "Test::Warn" : "0"
          }
       }
    },
    "release_status" : "stable",
+   "resources" : {
+      "bugtracker" : {
+         "web" : "https://github.com/srchulo/Mojo-DB-Results-Role-MoreMethods/issues"
+      },
+      "homepage" : "https://github.com/srchulo/Mojo-DB-Results-Role-MoreMethods",
+      "repository" : {
+         "type" : "git",
+         "url" : "https://github.com/srchulo/Mojo-DB-Results-Role-MoreMethods.git",
+         "web" : "https://github.com/srchulo/Mojo-DB-Results-Role-MoreMethods"
+      }
+   },
    "version" : "0.01",
+   "x_contributors" : [
+      "Adam Hopkins <violapiratejunky@gmail.com>"
+   ],
    "x_generated_by_perl" : "v5.30.0",
    "x_serialization_backend" : "Cpanel::JSON::XS version 4.13",
    "x_static_install" : 1
