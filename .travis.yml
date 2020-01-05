@@ -41,6 +41,7 @@ install:
   - cpanm -n Module::Build::Tiny
   - cpanm --quiet --notest Devel::Cover::Report::Coveralls
   - cpanm --quiet --notest --installdeps .
+  - cpanm --quiet --notest Test::Pod
 ### __app_cisetup__
 # ---
 # force_threaded_perls: 0
