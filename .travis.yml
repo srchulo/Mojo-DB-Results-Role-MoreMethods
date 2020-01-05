@@ -4,13 +4,10 @@ addons:
       - aspell
       - aspell-en
   postgresql: 9.6
-  mysql: "5.7"
 services:
     - postgresql
-    - mysql
 before_script:
     - psql -c 'create database test;' -U postgres
-    - mysql -e 'create database test default character set utf8 default collate utf8_general_ci;'
 language: perl
 perl:
   - blead
