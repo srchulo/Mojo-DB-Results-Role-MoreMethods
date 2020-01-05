@@ -5,8 +5,6 @@ use Test::Warn;
 
 plan skip_all => q{TEST_MYSQL=mysql://root@/test or TEST_POSTGRESQL=postgresql://root@/test}
     unless $ENV{TEST_MYSQL} or $ENV{TEST_POSTGRESQL};
-plan skip_all => 'Mojo::DB::Results::Role::Struct not installed'
-    unless eval { require Mojo::DB::Results::Role::Struct; 1 };
 
 my @mojo_dbs_config = (
     $ENV{TEST_MYSQL} ? do {
@@ -47,8 +45,6 @@ my @mojo_dbs_config = (
 
 for my $mojo_db_config (@mojo_dbs_config) {
     for my $role (qw(Mojo::DB::Results::Role::MoreMethods +MoreMethods)) {
-        my @roles = ($role, 'Mojo::DB::Results::Role::Struct');
-
         my $mojo_db = $mojo_db_config->{creator}->();
         note "Testing @{[ ref $mojo_db ]} with role $role";
 
@@ -61,7 +57,7 @@ for my $mojo_db_config (@mojo_dbs_config) {
 
         note 'Test calling struct_or_die in void context warns';
         my $results = $db->select(people => ['name', 'age', 'favorite_food'] => {id => 1})
-                         ->with_roles(@roles)
+                         ->with_roles($role)
                          ;
 
         warning_like
@@ -73,14 +69,14 @@ for my $mojo_db_config (@mojo_dbs_config) {
 
         note 'Test zero rows returned';
         $results = $db->select(people => ['name', 'age', 'favorite_food'] => {id => -1})
-                       ->with_roles(@roles)
+                       ->with_roles($role)
                        ;
 
         test_empty_results_dies($results);
 
         note 'Test returning single row';
         $results = $db->select(people => ['name', 'age', 'favorite_food'] => {id => 1})
-                       ->with_roles(@roles)
+                       ->with_roles($role)
                        ;
 
         my $struct = $results->struct_or_die;
@@ -92,7 +88,7 @@ for my $mojo_db_config (@mojo_dbs_config) {
 
         note 'Test struct with one returned column';
         $results = $db->select(people => 'age' => {id => 1})
-                      ->with_roles(@roles)
+                      ->with_roles($role)
                       ;
 
         $struct = $results->struct_or_die;
@@ -104,7 +100,7 @@ for my $mojo_db_config (@mojo_dbs_config) {
         $db->insert(people => {name => 'Alice', age => 27, favorite_food => 'Hamburgers'});
 
         $results = $db->select(people => ['name', 'age', 'favorite_food'] => undef, {order_by => {-asc => 'id'}})
-                      ->with_roles(@roles)
+                      ->with_roles($role)
                       ;
 
         $struct = $results->struct_or_die;
