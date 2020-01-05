@@ -35,7 +35,6 @@ env:
   global:
     - AUTHOR_TESTING=1
     - RELEASE_TESTING=1
-    - TEST_MYSQL=mysql://root@/test
     - TEST_POSTGRESQL=postgresql://postgres@/test
 before_install:
   - eval $(curl https://travis-perl.github.io/init) --auto --always-upgrade-modules
