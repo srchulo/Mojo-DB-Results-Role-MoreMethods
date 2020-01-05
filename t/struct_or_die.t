@@ -66,7 +66,7 @@ for my $mojo_db_config (@mojo_dbs_config) {
 
         warning_like
             { $results->struct_or_die }
-            qr/struct called without using return value/,
+            qr/struct_or_die called without using return value/,
             'struct_or_die called in void context warns';
 
         test_empty_results_dies($results);
