@@ -308,7 +308,7 @@ sub test_sub_used_as_key_and_value {
         'c option uses Mojo::Collection in subs';
     isa_ok $_, 'Mojo::Collection' for values %$hash;
 
-   $hash = $db->select(people => ['name', 'age', 'favorite_food'])
+    $hash = $db->select(people => ['name', 'age', 'favorite_food'])
               ->with_roles($role)
               ->hashify(
                   {hash => 1},
@@ -326,7 +326,7 @@ sub test_sub_used_as_key_and_value {
         {Bob => $bob, Alice => $alice},
         'hash option uses hash in subs';
 
-   $hash = $db->select(people => ['name', 'age', 'favorite_food'])
+    $hash = $db->select(people => ['name', 'age', 'favorite_food'])
               ->with_roles($role)
               ->hashify(
                   {struct => 1},
