@@ -1,6 +1,7 @@
 Revision history for Mojo-DB-Results-Role-MoreMethods
 
 {{$NEXT}}
+        - Skip import tests if Mojo::Pg or Mojo::mysql not installed.
 
 0.01  2020-01-05 17:21:08 CST
         - Initial release

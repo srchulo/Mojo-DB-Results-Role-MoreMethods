@@ -4,6 +4,9 @@ use Test::More;
 use Test::Exception;
 require Mojo::DB::Results::Role::MoreMethods;
 
+plan skip_all => 'Mojo::Pg not installed' unless eval { require Mojo::Pg; 1 };
+plan skip_all => 'Mojo::mysql not installed' unless eval { require Mojo::mysql; 1 };
+
 lives_ok
     { Mojo::DB::Results::Role::MoreMethods->import() }
     'import with no arguments lives';
