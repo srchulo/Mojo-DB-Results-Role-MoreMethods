@@ -1,6 +1,8 @@
 Revision history for Mojo-DB-Results-Role-MoreMethods
 
 {{$NEXT}}
+
+0.04  2020-01-08 22:41:17 CST
         - Remove -mysql, -Pg, and results_class. Fixes #1.
 
 0.03  2020-01-08 22:11:45 CST

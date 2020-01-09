@@ -10,9 +10,9 @@ Mojo::DB::Results::Role::MoreMethods - More methods for DB Results, like Mojo::P
 
 # SYNOPSIS
 
-    use Mojo::DB::Results::Role::MoreMethods results_class => 'Mojo::Pg::Results';
+    my $db = Mojo::Pg->new(...)
 
-    my $results = $db->select(people => ['name', 'age', 'favorite_food'] => {id => 123});
+    my $results = $db->select(people => ['name', 'age', 'favorite_food'] => {id => 123})->with_roles('+MoreMethods');
     my $name    = $results->get;
     my $name    = $results->get(0);
     my $name    = $results->get(-3);
@@ -32,7 +32,7 @@ Mojo::DB::Results::Role::MoreMethods - More methods for DB Results, like Mojo::P
     }
 
     # get the next row as a Mojo::Collection
-    my $results   = $db->select(people => ['first_name', 'middle_name', 'last_name']);
+    my $results   = $db->select(people => ['first_name', 'middle_name', 'last_name'])->with_roles('+MoreMethods');
     my $full_name = $results->c->join(' ');
 
     # or get collection values by name
@@ -42,19 +42,19 @@ Mojo::DB::Results::Role::MoreMethods - More methods for DB Results, like Mojo::P
     my $full_names = $results->collections->map(sub { $_->join(' ') });
 
     # assert that exactly one row is returned where expected (not 0, not more than one)
-    my $results = $db->select(people => ['name', 'age', 'favorite_food'] => {id => 123});
+    my $results = $db->select(people => ['name', 'age', 'favorite_food'] => {id => 123})->with_roles('+MoreMethods');
     my $name    = $results->one;
     my ($name, $age, $favorite_food) = $results->one;
     my ($name, $favorite_food)       = $results->one_by_name('name', 'favorite_food');
 
     # Flatten results into one Mojo::Collection with names of all people who like Pizza
-    my $results = $db->select(people => ['name'] => {favorite_food => 'Pizza'});
+    my $results = $db->select(people => ['name'] => {favorite_food => 'Pizza'})->with_roles('+MoreMethods');
     my $names   = $results->flatten;
     say 'Pizza lovers:';
     say for $names->each;
 
     # access results by a key
-    my $results = $db->select(people => '*');
+    my $results = $db->select(people => '*')->with_roles('+MoreMethods');
     my $results_by_name = $results->hashify('name');
 
     # $alice_row is a hash
@@ -67,7 +67,7 @@ Mojo::DB::Results::Role::MoreMethods - More methods for DB Results, like Mojo::P
     my $alice_smith_row = $results_by_full_name->{Alice}{Smith};
 
     # collect results by a key in a Mojo::Collection behind a hash
-    my $results = $db->select(people => '*');
+    my $results = $db->select(people => '*')->with_roles('+MoreMethods');
     my $collections_by_name = $results->hashify_collect('name');
 
     # $alice_collection is a Mojo::Collection of all rows with the name 'Alice' as hashes
@@ -81,7 +81,7 @@ Mojo::DB::Results::Role::MoreMethods - More methods for DB Results, like Mojo::P
 
     # create a Mojo::Collection of Mojo::Collection's, where all results that share the same key
     # are grouped in the same inner Mojo::Collection
-    my $results = $db->select(people => '*');
+    my $results = $db->select(people => '*')->with_roles('+MoreMethods');
     my $name_collections = $results->collect_by('name');
 
     for my $name_collection ($name_collections->each) {
@@ -106,41 +106,6 @@ like [Mojo::Pg::Results](https://metacpan.org/pod/Mojo::Pg::Results) or [Mojo::m
 - hashes
 
 # HOW TO APPLY ROLE
-
-## results\_class
-
-    use Mojo::DB::Results::Role::MoreMethods results_class => 'Mojo::Pg::Results';
-
-    # or multiple
-
-    use Mojo::DB::Results::Role::MoreMethods results_class => ['Mojo::Pg::Results', 'Mojo::mysql::Results'];
-
-["results\_class"](#results_class) allows you to apply [Mojo::DB::Results::Role::MoreMethods](https://metacpan.org/pod/Mojo::DB::Results::Role::MoreMethods) to one results class package by providing the results class name,
-or to multiple by providing an arrayref of results class names.
-
-## -mysql
-
-    use Mojo::DB::Results::Role::MoreMethods -mysql;
-
-    # shortcut for
-
-    use Mojo::DB::Results::Role::MoreMethods results_class => 'Mojo::mysql::Results';
-
-[-mysql](https://metacpan.org/pod/-mysql) is a shortcut for applying [Mojo::DB::Results::Role::MoreMethods](https://metacpan.org/pod/Mojo::DB::Results::Role::MoreMethods) to [Mojo::mysql::Results](https://metacpan.org/pod/Mojo::mysql::Results).
-
-This can be used with ["-Pg"](#pg).
-
-## -Pg
-
-    use Mojo::DB::Results::Role::MoreMethods -Pg;
-
-    # shortcut for
-
-    use Mojo::DB::Results::Role::MoreMethods results_class => 'Mojo::Pg::Results';
-
-[-Pg](https://metacpan.org/pod/-Pg) is a shortcut for applying [Mojo::DB::Results::Role::MoreMethods](https://metacpan.org/pod/Mojo::DB::Results::Role::MoreMethods) to [Mojo::Pg::Results](https://metacpan.org/pod/Mojo::Pg::Results).
-
-This can be used with ["-mysql"](#mysql).
 
 ## with\_roles
 
