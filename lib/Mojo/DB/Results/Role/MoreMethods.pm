@@ -5,7 +5,7 @@ use Mojo::Util ();
 
 with 'Mojo::DB::Results::Role::Struct';
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 requires qw(array arrays columns hash hashes);
 
